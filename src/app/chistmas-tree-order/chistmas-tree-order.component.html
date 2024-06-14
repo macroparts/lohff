@@ -33,14 +33,20 @@
         </div>
         <input type="text" id="postcode" [formControl]="postcodeControl" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 ps-10 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
     </div>
-    <div *ngIf="showHouseInput" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+    <div *ngIf="formState == 'POSTCODE_VERIFICATION'">
+        <p>Prüfe Eingabe</p>
+    </div>
+    <div *ngIf="formState == 'POSTCODE_VALID'" matAutocompleteOrigin #origin="matAutocompleteOrigin">
         <label for="house" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Strasse &amp; Hausnummer</label>
-        <input [cdkTrapFocusAutoCapture]="showHouseInput" [cdkTrapFocus]="showHouseInput" matInput type="text" [formControl]="houseControl" [matAutocomplete]="auto" [matAutocompleteConnectedTo]="origin" id="house" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+        <input [cdkTrapFocusAutoCapture]="formState == 'POSTCODE_VALID'" [cdkTrapFocus]="formState == 'POSTCODE_VALID'" matInput type="text" [formControl]="houseControl" [matAutocomplete]="auto" [matAutocompleteConnectedTo]="origin" id="house" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+    </div>
+    <div *ngIf="formState == 'POSTCODE_INVALID'">
+        <p>PLZ Ungültig</p>
     </div>
 
     <mat-autocomplete #auto="matAutocomplete">
-        @for (option of ['Friedhofsallee 47','Friedhofsallee 49']; track option) {
-            <mat-option [value]="option">{{option}}</mat-option>
+        @for (option of filteredOptions | async; track option) {
+            <mat-option [value]="option.street + ' ' + option.housenumber">{{option.street}} {{option.housenumber}}</mat-option>
         }
     </mat-autocomplete>
 </form>
